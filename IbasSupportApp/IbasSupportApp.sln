@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IbasSupportApp", "IbasSupportApp.csproj", "{44FB7959-394C-5670-CB50-E236A6F655D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IbasSupportApi", "..\IbasSupportApi\IbasSupportApi.csproj", "{6E57D357-E1BD-6ECC-2B03-56E7F1F4DD16}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{44FB7959-394C-5670-CB50-E236A6F655D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44FB7959-394C-5670-CB50-E236A6F655D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44FB7959-394C-5670-CB50-E236A6F655D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44FB7959-394C-5670-CB50-E236A6F655D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E57D357-E1BD-6ECC-2B03-56E7F1F4DD16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E57D357-E1BD-6ECC-2B03-56E7F1F4DD16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E57D357-E1BD-6ECC-2B03-56E7F1F4DD16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E57D357-E1BD-6ECC-2B03-56E7F1F4DD16}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0DC9621B-61E1-490C-9900-838D76422CF5}
+	EndGlobalSection
+EndGlobal
