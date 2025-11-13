@@ -15,19 +15,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up .NET Core
+      - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.x'
 
-      - name: Publish API project
-        run: dotnet publish ./IbasSupportApi/IbasSupportApi.csproj -c Release -o ./publish
+      - name: Publish ONLY API project
+        run: dotnet publish ./IbasSupportApi/IbasSupportApi.csproj -c Release -o ./output
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: api-app
-          path: ./publish
+          name: api-package
+          path: ./output
 
   deploy:
     runs-on: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: api-app
+          name: api-package
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -49,7 +49,7 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_065AAD4066C343DBA862E913502C8F5D }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CBC157C6243342CB82A2C2B86ECBEBC7 }}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'ibas-support-app-4065'
