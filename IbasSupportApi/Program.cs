@@ -1,11 +1,9 @@
-﻿using IbasSupportApi.Services;
+﻿var builder = WebApplication.CreateBuilder(args);
 
-var builder = WebApplication.CreateBuilder(args);
-
-// 👇 Sørg for at appsettings.json bliver læst
+// Load appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-// 👇 Tilføj CORS så Blazor må kalde API’et
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorApp",
@@ -18,9 +16,13 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddSingleton<CosmosDbService>();
 
+
 var app = builder.Build();
 
 app.UseCors("AllowBlazorApp");
+
+app.UseAuthorization(); // <-- DEN MANGLEDE
+
 app.MapControllers();
 
 app.Run();

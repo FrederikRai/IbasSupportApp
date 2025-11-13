@@ -1,38 +1,48 @@
 ﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Logging;
 using IbasSupportApi.Models;
 
-namespace IbasSupportApi.Services
+public class CosmosDbService
 {
-    public class CosmosDbService
+    private readonly Container _container;
+    private readonly ILogger<CosmosDbService> _logger;
+
+    public CosmosDbService(IConfiguration config, ILogger<CosmosDbService> logger)
     {
-        private readonly Container _container;
+        _logger = logger;
 
-        public CosmosDbService(IConfiguration configuration)
+        try
         {
-            // Log for at bekræfte, at vi får korrekt konfiguration
-            Console.WriteLine("🔍 Connection string: " + configuration["CosmosDb:ConnectionString"]);
+            var endpoint = config["CosmosDb:AccountEndpoint"];
+            var key = config["CosmosDb:AccountKey"];
+            var database = config["CosmosDb:DatabaseName"];
+            var containerName = config["CosmosDb:ContainerName"];
 
-            var account = configuration["CosmosDb:AccountEndpoint"];
-            var key = configuration["CosmosDb:AccountKey"];
-            var databaseName = configuration["CosmosDb:DatabaseName"];
-            var containerName = configuration["CosmosDb:ContainerName"];
+            _logger.LogInformation("CosmosDB settings loaded:");
+            _logger.LogInformation($"Endpoint: {endpoint}");
+            _logger.LogInformation($"Database: {database}, Container: {containerName}");
 
-            // Opret Cosmos-klienten
-            var client = new CosmosClient(account, key);
-            var database = client.GetDatabase(databaseName);
-            _container = database.GetContainer(containerName);
+            CosmosClient client = new CosmosClient(endpoint, key);
+            _container = client.GetContainer(database, containerName);
         }
-
-        public async Task AddSupportMessageAsync(SupportMessage message)
+        catch (Exception ex)
         {
-            // Sørg for at der altid er et unikt id
-            if (string.IsNullOrWhiteSpace(message.Id))
-            {
-                message.Id = Guid.NewGuid().ToString();
-            }
+            _logger.LogError(ex, "Failed to initialize Cosmos DB client.");
+            throw;
+        }
+    }
 
-            // Gem beskeden i Cosmos DB
+    public async Task AddSupportMessageAsync(SupportMessage message)
+    {
+        try
+        {
             await _container.CreateItemAsync(message, new PartitionKey(message.Id));
+            _logger.LogInformation("Message saved successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to save message to Cosmos DB.");
+            throw;
         }
     }
 }

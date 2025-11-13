@@ -1,3 +1,1 @@
-﻿# Ignore appsettings files with secrets
-appsettings.json
-appsettings.Development.json
+﻿
