@@ -18,19 +18,20 @@ jobs:
         with:
           dotnet-version: '9.x'
 
-      - name: Restore dependencies
+      # Build ONLY the API project
+      - name: Restore
         run: dotnet restore ./IbasSupportApi/IbasSupportApi.csproj
 
       - name: Build
-        run: dotnet build ./IbasSupportApi/IbasSupportApi.csproj --configuration Release --no-restore
+        run: dotnet build ./IbasSupportApi/IbasSupportApi.csproj -c Release --no-restore
 
       - name: Publish
-        run: dotnet publish ./IbasSupportApi/IbasSupportApi.csproj -c Release -o ./output
+        run: dotnet publish ./IbasSupportApi/IbasSupportApi.csproj -c Release -o ./output --no-build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: api-publish
+          name: api-app
           path: ./output
 
   deploy:
@@ -38,14 +39,21 @@ jobs:
     needs: build
 
     steps:
-      - name: Download Artifact
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: api-publish
+          name: api-app
 
-      - name: Azure Login
+      - name: Login to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C92BCBA2DA8A4E0EA5F4C7E56D48F13E }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_065AAD4066C343DBA862E913502C8F5D }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CBC157C6243342CB82A2C2B86ECB
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CBC157C6243342CB82A2C2B86ECBEBC7 }}
+
+      - name: Deploy
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'ibas-support-app-4065'
+          slot-name: 'Production'
+          package: .
