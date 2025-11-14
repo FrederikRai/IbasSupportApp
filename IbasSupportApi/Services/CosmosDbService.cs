@@ -2,47 +2,50 @@
 using Microsoft.Extensions.Logging;
 using IbasSupportApi.Models;
 
-public class CosmosDbService
+namespace IbasSupportApi.Services
 {
-    private readonly Container _container;
-    private readonly ILogger<CosmosDbService> _logger;
-
-    public CosmosDbService(IConfiguration config, ILogger<CosmosDbService> logger)
+    public class CosmosDbService
     {
-        _logger = logger;
+        private readonly Container _container;
+        private readonly ILogger<CosmosDbService> _logger;
 
-        try
+        public CosmosDbService(IConfiguration config, ILogger<CosmosDbService> logger)
         {
-            var endpoint = config["CosmosDb:AccountEndpoint"];
-            var key = config["CosmosDb:AccountKey"];
-            var database = config["CosmosDb:DatabaseName"];
-            var containerName = config["CosmosDb:ContainerName"];
+            _logger = logger;
 
-            _logger.LogInformation("CosmosDB settings loaded:");
-            _logger.LogInformation($"Endpoint: {endpoint}");
-            _logger.LogInformation($"Database: {database}, Container: {containerName}");
+            try
+            {
+                var endpoint = config["CosmosDb:AccountEndpoint"];
+                var key = config["CosmosDb:AccountKey"];
+                var database = config["CosmosDb:DatabaseName"];
+                var containerName = config["CosmosDb:ContainerName"];
 
-            CosmosClient client = new CosmosClient(endpoint, key);
-            _container = client.GetContainer(database, containerName);
+                _logger.LogInformation("CosmosDB settings loaded:");
+                _logger.LogInformation($"Endpoint: {endpoint}");
+                _logger.LogInformation($"Database: {database}, Container: {containerName}");
+
+                CosmosClient client = new CosmosClient(endpoint, key);
+                _container = client.GetContainer(database, containerName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to initialize Cosmos DB client.");
+                throw;
+            }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to initialize Cosmos DB client.");
-            throw;
-        }
-    }
 
-    public async Task AddSupportMessageAsync(SupportMessage message)
-    {
-        try
+        public async Task AddSupportMessageAsync(SupportMessage message)
         {
-            await _container.CreateItemAsync(message, new PartitionKey(message.Id));
-            _logger.LogInformation("Message saved successfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to save message to Cosmos DB.");
-            throw;
+            try
+            {
+                await _container.CreateItemAsync(message, new PartitionKey(message.Id));
+                _logger.LogInformation("Message saved successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to save message to Cosmos DB.");
+                throw;
+            }
         }
     }
 }
